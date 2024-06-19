@@ -1,13 +1,14 @@
 shader_type canvas_item;
 
 // Uniforms grouped by functionality
+uniform vec2 draw_offset = vec2(0.0, 0.0);
+
 uniform vec4 color1 : source_color;
 uniform vec4 color2 : source_color;
 uniform bool doDither = true;
 uniform float speed = 0;
 uniform float speed2 = 0.2;
 uniform float transOffset = -0.2;
-uniform float pixelation = 32.0;
 uniform float noiseScale = 0.1;
 uniform vec2 ditherScale = vec2(3200, 3200);
 uniform vec2 baseScale = vec2(1, 1);
@@ -17,9 +18,6 @@ uniform sampler2D noise_tex;
 uniform float trueAlpha = 0.2;
 
 uniform float rotSpeed = 5; // degrees per second
-
-uniform vec2 textureSize = vec2(94, 93);
-varying vec2 pixelSize;
 
 // Zoom-related uniforms
 uniform float zoomFactor = 1;
@@ -35,19 +33,33 @@ uniform mat4 ditherMatrix = mat4(
     vec4(0.6875, 0.4375, 0.6250, 0.3750)
 );
 
+// Uniforms for noise offset
+uniform float noiseOffsetSpeed = 1.0; // Speed of noise offset change
+uniform float noiseOffsetScale = 1.0; // Scale of noise offset
+
 // Function to calculate dithering
-// Function to calculate dithering
-float dither(vec2 position, float brightness) {
-    vec2 ditherPos = mod(position, 4.0);
+float dither(vec2 uvPosition, float brightness) {
+    // Convert the UV position to pixel space
+    vec2 pixelPosition = uvPosition * vec2(1920.0, 1080.0);
+
+    // Apply the dither scale, which is in pixel space
+    vec2 ditherPos = pixelPosition / ditherScale;
+
+    // Wrap the position to the size of the dither matrix
+    ditherPos = mod(ditherPos, 4.0);
+
+    // Get the threshold value from the dither matrix
     float ditherThreshold = ditherMatrix[int(ditherPos.x)][int(ditherPos.y)];
-    return float(brightness > ditherThreshold) * 1.0;
+
+    // Return the dithered brightness value
+    return float(brightness > ditherThreshold);
 }
 
-// Function to calculate tiling UV
+
+// Function to calculate tiling UV without pixelation
 vec2 calculateTilingUV(vec2 uv, float time) {
     vec2 tiling_uv = uv * baseScale;
     tiling_uv += time * speed * dir;
-    tiling_uv = floor(tiling_uv * pixelation) / pixelation;
     return tiling_uv;
 }
 
@@ -80,12 +92,8 @@ vec2 applyZoomAndRotate(vec2 tiling_uv, float currentZoomFactor, float time) {
     return rotated_uv;
 }
 
-
-
-
-
 void vertex() {
-	pixelSize = vec2(1.0/textureSize.x, 1.0/textureSize.y);
+    // No operations in vertex shader for this example
 }
 
 void fragment() {
@@ -97,37 +105,34 @@ void fragment() {
     // Apply the current zoom offset to the zoom factor
     float currentZoomFactor = zoomFactor + currentZoomOffset;
 
-    vec2 uv = UV;
+    vec2 uv = SCREEN_UV * (vec2((16.0/9.0), 1.0)) + draw_offset;
 
-    // Calculate UVs for various effects
-	// checker needs to use zoomed UV in its check
+    // Calculate UVs for tiling without pixelation
     vec2 tiling_uv = calculateTilingUV(uv, time);
-    vec2 noise_uv = mod((tiling_uv + (time * speed2 * dir2)) * noiseScale, 1.0);
-    vec2 zoomed_uv = applyZoomAndRotate(tiling_uv, currentZoomFactor, TIME);
-	
+
+    // Apply zoom and rotation to tiling UV coordinates
+    vec2 zoomed_uv = applyZoomAndRotate(tiling_uv, currentZoomFactor, time);
+
     // Sample the texture and apply alpha
     vec4 texture_color = texture(TEXTURE, zoomed_uv);
-    texture_color += texture(TEXTURE, zoomed_uv + vec2(0.0, pixelSize.y/2.0));
-    texture_color += texture(TEXTURE, zoomed_uv + vec2(pixelSize.x/2.0, 0.0));
-    texture_color += texture(TEXTURE, zoomed_uv + vec2(pixelSize.x/2.0, pixelSize.y/2.0));
-    texture_color *= vec4(0.25, 0.25, 0.25, 0.25);
     texture_color.a *= trueAlpha;
-	
-    // todo: this allows shadows overlapping- get which tile a pixel *would be sampling* for the checker pattern
 
-    // Apply checker pattern and dithering
-    bool checker = mod(floor(tiling_uv.x) + floor(tiling_uv.y), 2.0) < 1.0;
-    float noise_alpha = texture(noise_tex, noise_uv).r;
-    noise_alpha = noise_alpha = round((noise_alpha + transOffset) * 4.0) / 4.0;
-    float dithered_value = doDither ? dither(noise_uv * ditherScale, noise_alpha) : 0.0;
-	
+    // Calculate noise alpha
+    float noise_alpha = texture(noise_tex, SCREEN_UV * noiseScale).r;
+    noise_alpha = round((noise_alpha + transOffset) * 4.0) / 4.0;
+
+    // Calculate dithering only for the noise pattern
+    float dithered_value = doDither ? dither(SCREEN_UV, noise_alpha) : noise_alpha;
+
     // Combine colors and apply shadow
     vec4 mixedColor = mix(color1, color2, dithered_value);
     mixedColor.a = texture_color.a;
 
+    // Apply checker pattern and alpha blending
+    bool checker = mod(floor(tiling_uv.x) + floor(tiling_uv.y), 2.0) < 1.0;
     if (checker) {
         COLOR = mixedColor;
-		COLOR.a = mix(0, COLOR.a, step(0.5, mixedColor.a));
+        COLOR.a = mix(0.0, COLOR.a, step(0.5, mixedColor.a));
     } else {
         COLOR.a = 0.0;
     }

@@ -12,13 +12,18 @@ uniform float dot_width_period2; // seconds
 uniform float dot_hardness : hint_range(0.0, 1.0); // Hardness of the dots' edges
 uniform vec4 background_color : source_color; // Background color of the grid
 uniform vec4 background_color2 : source_color; // unimplemented
+
 uniform float background_color_period = 20.0;
+uniform float background_color_wave_strength : hint_range(0, 1);
+uniform float bkgc_offset : hint_range(-1, 1);
 
 uniform float gradient_strength : hint_range(0.0, 1.0);
 
 uniform vec4 dot_color : source_color; // Color of the dots
 uniform vec4 shadow_dot_color : source_color = vec4(0.1, 0.1, 0.1, 1.0); // Color of the shadow dots
 uniform vec2 shadow_offset;
+
+uniform float backgroundDitherPPP : hint_range(1.0, 16.0, 1.0);
 
 // Uniforms for the control points of the Bezier curve
 uniform vec2 p0;
@@ -104,11 +109,13 @@ void fragment() {
     float shadow_dot_intensity = calculate_dot_intensity(uv_rotated + shadow_offset, grid_size, dot_width, 1.0 - dot_hardness);
 
     // Calculate background intensity based on period
-	float gradient = sqrt((UV.x * UV.x + UV.y * UV.y)) * gradient_strength;
-    float background_intensity = sin(TIME / background_color_period) * (1.0-gradient) + gradient;
+	float dist = sqrt((UV.x * UV.x + UV.y * UV.y * (16.0/9.0))) / sqrt(2.0);
+	float gradient = bkgc_offset + (dist * gradient_strength) + (0.3 * sin((TIME / background_color_period)) * background_color_wave_strength);
+	
+    float background_intensity = sin(TIME / background_color_period) * background_color_wave_strength + gradient;
 
     // Calculate dithering between background colors
-    vec4 dithered_background_color = mix(background_color, background_color2, dither(UV*(160.0*4.0), background_intensity));
+    vec4 dithered_background_color = mix(background_color, background_color2, dither(SCREEN_UV*(vec2(1920.0, 1080.0) / backgroundDitherPPP), background_intensity));
 
     // Combine the main dot and shadow dot colors
     vec3 combined_color = mix(shadow_dot_color.rgb, dithered_background_color.rgb, shadow_dot_intensity);
