@@ -1,6 +1,6 @@
 Just a couple shaders I threw together for a stream background
 
-Showcase: [https://youtu.be/6rEgTr4IpkM?si=2KaVA9Ae-3gAocPA // todo: actually link, and show current version](https://youtu.be/7dtHheMQa24)
+[showcase video (just it running for a bit in 1080p60)](https://youtu.be/7dtHheMQa24)
 
 dithering is screen uv aligned to reduce bitrate usage
 
