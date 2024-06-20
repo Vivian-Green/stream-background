@@ -1,7 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://bq5kbfv4j8o8r"]
+[gd_scene load_steps=17 format=3 uid="uid://bq5kbfv4j8o8r"]
 
 [ext_resource type="Shader" path="res://checkerThing.gdshader" id="1_68uck"]
-[ext_resource type="Script" path="res://controller.gd" id="1_cwo6h"]
 [ext_resource type="Texture2D" uid="uid://bs4sqquk1phug" path="res://fler.png" id="2_185or"]
 [ext_resource type="Shader" path="res://bkg.gdshader" id="2_beqms"]
 
@@ -170,8 +169,6 @@ shader_parameter/noiseOffsetSpeed = 1.0
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_cic08")
 
 [node name="Node2D" type="Node2D"]
-script = ExtResource("1_cwo6h")
-big_base_scale = Vector2(4, 4)
 
 [node name="bkg" type="ColorRect" parent="."]
 z_index = -4096
