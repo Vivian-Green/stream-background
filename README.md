@@ -14,7 +14,7 @@ Dot Grid Shader creates a grid pattern with animated dots. The dots slide and br
 - **Dithering Effect**: A dither matrix creates a slowly pulsing gradient transition for the background between the top left and bottom right corners
 
 ### Checker Tiling Shader
-Checker Tiling Shader draws a transparent texture in a checkered pattern with a dynamic twist. It pixelated & dithered aligned to screen uv space, with sliding noise because it looked nice
+Checker Tiling Shader draws a transparent texture in a checkered pattern with a dynamic twist. Uses pixel-aligned dithering, with sliding noise because it looked nice
 
 - **Checkered Pattern**: Tiles are checkered, with animated translation and pulsing size, also per-tile rotation
   **Pixelation & Color Blending**: Pixelated dithering blends two colors seamlessly for texture
