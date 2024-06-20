@@ -50,7 +50,7 @@ shader_parameter/color2 = Color(0.232965, 0.112135, 0.32525, 1)
 shader_parameter/doDither = true
 shader_parameter/speed = 0.2
 shader_parameter/transOffset = 0.3
-shader_parameter/noiseScale = 0.05
+shader_parameter/noiseScale = 0.3
 shader_parameter/ditherScale = Vector2(4, 4)
 shader_parameter/baseScale = Vector2(8, 8)
 shader_parameter/dir = Vector2(0.25, -0.5)
@@ -61,7 +61,7 @@ shader_parameter/minZoomOffset = -0.3
 shader_parameter/maxZoomOffset = -0.1
 shader_parameter/pulseFrequency = 0.2
 shader_parameter/ditherMatrix = Projection(0.0625, 0.8125, 0.25, 1, 0.5625, 0.3125, 0.75, 0.5, 0.1875, 0.9375, 0.125, 0.875, 0.6875, 0.4375, 0.625, 0.375)
-shader_parameter/noiseOffsetSpeed = 1.0
+shader_parameter/noiseOffsetSpeed = 0.1
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_h1nne")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_a1mbq"]
@@ -79,7 +79,7 @@ noise = SubResource("FastNoiseLite_a1mbq")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sgnbu"]
 shader = ExtResource("1_68uck")
-shader_parameter/draw_offset = Vector2(-0.015, -0.015)
+shader_parameter/draw_offset = Vector2(-0.011, -0.011)
 shader_parameter/color1 = Color(0, 0, 0, 1)
 shader_parameter/color2 = Color(0.0537134, 0.0148075, 0.0887038, 1)
 shader_parameter/doDither = true
@@ -96,7 +96,7 @@ shader_parameter/minZoomOffset = -0.3
 shader_parameter/maxZoomOffset = -0.1
 shader_parameter/pulseFrequency = 0.2
 shader_parameter/ditherMatrix = Projection(0.0625, 0.8125, 0.25, 1, 0.5625, 0.3125, 0.75, 0.5, 0.1875, 0.9375, 0.125, 0.875, 0.6875, 0.4375, 0.625, 0.375)
-shader_parameter/noiseOffsetSpeed = 1.0
+shader_parameter/noiseOffsetSpeed = 0.1
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_iemdg")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_yht7s"]
