@@ -2,18 +2,15 @@ shader_type canvas_item;
 
 // Uniforms grouped by functionality
 uniform vec2 draw_offset = vec2(0.0, 0.0);
-
 uniform vec4 color1 : source_color;
 uniform vec4 color2 : source_color;
 uniform bool doDither = true;
 uniform float speed = 0;
-uniform float speed2 = 0.2;
 uniform float transOffset = -0.2;
 uniform float noiseScale = 0.1;
 uniform vec2 ditherScale = vec2(3200, 3200);
 uniform vec2 baseScale = vec2(1, 1);
 uniform vec2 dir = vec2(0.5, 0.5);
-uniform vec2 dir2 = vec2(-0.3, 0.7);
 uniform sampler2D noise_tex;
 uniform float trueAlpha = 0.2;
 
@@ -35,7 +32,7 @@ uniform mat4 ditherMatrix = mat4(
 
 // Uniforms for noise offset
 uniform float noiseOffsetSpeed = 1.0; // Speed of noise offset change
-uniform float noiseOffsetScale = 1.0; // Scale of noise offset
+
 
 // Function to calculate dithering
 float dither(vec2 uvPosition, float brightness) {
@@ -118,7 +115,7 @@ void fragment() {
     texture_color.a *= trueAlpha;
 
     // Calculate noise alpha
-    float noise_alpha = texture(noise_tex, SCREEN_UV * noiseScale).r;
+    float noise_alpha = texture(noise_tex, mod((dir * (noiseOffsetSpeed * TIME) + uv) * noiseScale, vec2(1.0))).r;
     noise_alpha = round((noise_alpha + transOffset) * 4.0) / 4.0;
 
     // Calculate dithering only for the noise pattern
