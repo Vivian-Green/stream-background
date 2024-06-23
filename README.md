@@ -5,6 +5,8 @@ Just a couple shaders I threw together for a stream background
 dithering is screen uv aligned to reduce bitrate usage
 
 
+Reworded gpt summary:
+
 ### Dot Grid Shader
 Dot Grid Shader creates a grid pattern with animated dots. The dots slide and breathe over time, resulting in a pulsating effect.
 
